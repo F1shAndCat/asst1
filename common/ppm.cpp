@@ -23,7 +23,7 @@ writePPMImage(int* data, int width, int height, const char *filename, int maxIte
         // pixels. a.k.a. Make things look cooler.
 
         float mapped = pow( std::min(static_cast<float>(maxIterations),
-                                     static_cast<float>(data[i])) / 256.f, .5f);
+                                     static_cast<float>(data[i])) / 256.f, .5f);  //懂了 计算序列化平铺后点个数 然后按照序列点进行一个sqrt(cnt)的亮度映射
 
         // convert back into 0-255 range, 8-bit channels
         unsigned char result = static_cast<unsigned char>(255.f * mapped);

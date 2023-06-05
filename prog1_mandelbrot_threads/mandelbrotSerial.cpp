@@ -37,14 +37,14 @@
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
-static inline int mandel(float c_re, float c_im, int count)
+//static inline
+int mandel(float c_re, float c_im, int count) //单纯复数的平方 也可以z_i=z_{i-1}^{2}+C (C是复数)
 {
     float z_re = c_re, z_im = c_im;
     int i;
     for (i = 0; i < count; ++i) {
 
-        if (z_re * z_re + z_im * z_im > 4.f)
+        if (z_re * z_re + z_im * z_im > 4.f)  //是被证明的结论 z^i+C 在 |C| >= 2 时一定不收敛
             break;
 
         float new_re = z_re*z_re - z_im*z_im;
@@ -55,6 +55,8 @@ static inline int mandel(float c_re, float c_im, int count)
 
     return i;
 }
+// emm 所以这个是指边界的集合对吗? 是的 从0开始迭代最终收敛的C的取值集合
+// ?但是为什么这个迭代式是z_i=z_{i-1}^2?
 
 //
 // MandelbrotSerial --

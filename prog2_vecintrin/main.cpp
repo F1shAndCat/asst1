@@ -186,7 +186,7 @@ void absVector(float* values, float* output, int N) {
 //  Note: Take a careful look at this loop indexing.  This example
 //  code is not guaranteed to work when (N % VECTOR_WIDTH) != 0.
 //  Why is that the case?
-  for (int i=0; i<N; i+=VECTOR_WIDTH) {
+  for (int i=0; i<N; i+=VECTOR_WIDTH) { //obviously without padding it will change the unexploited area.
 
     // All ones
     maskAll = _cs149_init_ones();
@@ -219,6 +219,8 @@ void absVector(float* values, float* output, int N) {
 //
 // For each element, compute values[i]^exponents[i] and clamp value to
 // 9.999.  Store result in output.
+
+//谔谔 EXP一定是非负数? en rand()出来的
 void clampedExpSerial(float* values, int* exponents, float* output, int N) {
   for (int i=0; i<N; i++) {
     float x = values[i];
@@ -246,10 +248,43 @@ void clampedExpVector(float* values, int* exponents, float* output, int N) {
   // CS149 STUDENTS TODO: Implement your vectorized version of
   // clampedExpSerial() here.
   //
-  // Your solution should work for any value of
-  // N and VECTOR_WIDTH, not just when VECTOR_WIDTH divides N
+  // **Your solution should work for any value of
+  // **N and VECTOR_WIDTH, not just when VECTOR_WIDTH divides N
   //
-  
+  //let's do copying
+  __cs149_vec_float x;
+  __cs149_vec_int y;
+  __cs149_vec_int zeros;
+  __cs149_vec_int ones;
+  __cs149_vec_float limit;
+  __cs149_vec_float result;
+  for(int i=0;i<N;i+=VECTOR_WIDTH)
+  {
+    __cs149_mask Ones=_cs149_init_ones(min(VECTOR_WIDTH,N-i));
+    __cs149_mask Zeros=_cs149_init_ones(0);
+    _cs149_vload_float(x,values+i,Ones);
+    _cs149_vset_float(result,1.f,Ones);
+    _cs149_vload_int(y,exponents+i,Ones);
+    _cs149_vset_int(zeros,0,Ones);          //没必要啊
+    _cs149_vset_int(ones,1,Ones);
+    _cs149_vset_float(limit,9.999999f,Ones);
+    // _cs149_veq_int(Zeros,y,zeros,Ones);  //if(y==0)   
+    // _cs149_vset_float(result,1.f,Zeros);   //output[i]=1.f
+    //Zeros=_cs149_mask_not(Zeros);
+    //Ones=_cs149_mask_and(Ones,Zeros); //else
+    _cs149_vgt_int(Ones,y,zeros,Ones);
+    while(_cs149_cntbits(Ones)>0)
+    {
+      _cs149_vmult_float(result,result,x,Ones);
+      _cs149_vsub_int(y,y,ones,Ones);
+      _cs149_vgt_int(Ones,y,zeros,Ones);
+    }
+    Ones=_cs149_init_ones(min(VECTOR_WIDTH,N-i));
+    _cs149_vgt_float(Ones,result,limit,Ones);
+    _cs149_vset_float(result,9.999999f,Ones);
+    Ones=_cs149_init_ones(min(VECTOR_WIDTH,N-i));
+    _cs149_vstore_float(output+i,result,Ones);
+  }
 }
 
 // returns the sum of all elements in values
@@ -264,17 +299,28 @@ float arraySumSerial(float* values, int N) {
 
 // returns the sum of all elements in values
 // You can assume N is a multiple of VECTOR_WIDTH
-// You can assume VECTOR_WIDTH is a power of 2
-float arraySumVector(float* values, int N) {
+// You can assume VECTOR_WIDTH is a power of 2 //那就是分治计算方法?
+float arraySumVector(float* values, int N) {   //分治求和捏
   
   //
   // CS149 STUDENTS TODO: Implement your vectorized version of arraySumSerial here
   //
-  
+  float sum=0;  
+  __cs149_vec_float a;
+  __cs149_vec_float tmp;
   for (int i=0; i<N; i+=VECTOR_WIDTH) {
-
+  __cs149_mask tot=_cs149_init_ones();
+  _cs149_vload_float(a,values+i,tot);
+  int cnt=1;
+  while(cnt*2<=VECTOR_WIDTH)
+  {
+  _cs149_hadd_float(a,a);
+  _cs149_interleave_float(tmp,a);
+  a=tmp;
+  cnt*=2;
   }
-
-  return 0.0;
+  sum+=a.value[0];
+  }
+  return sum;
 }
 

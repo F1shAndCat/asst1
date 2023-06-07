@@ -51,16 +51,17 @@ void usage(const char* progname) {
 
 bool verifyResult (int *gold, int *result, int width, int height) {
 
-    // int i, j;
-    // for (i = 0; i < height; i++) {
-    //     for (j = 0; j < width; j++) {
-    //         if (abs(gold[i * width + j]-result[i * width + j])>5) {
-    //             printf ("Mismatch : [%d][%d], Expected : %d, Actual : %d\n",
-    //                         i, j, gold[i * width + j], result[i * width + j]);
-    //             return 0;
-    //         }
-    //     }
-    // }
+    int i, j;
+    for (i = 0; i < height; i++) {
+        for (j = 0; j < width; j++) {
+             if (gold[i * width + j]!=result[i * width + j]) {
+            //    if(abs(gold[i * width + j]-result[i * width + j])>12){
+                printf ("Mismatch : [%d][%d], Expected : %d, Actual : %d\n",
+                            i, j, gold[i * width + j], result[i * width + j]);
+                return 0;
+            }
+        }
+    }
 
     return 1;
 }
@@ -70,7 +71,7 @@ int main(int argc, char** argv) {
     const unsigned int width = 1600;
     const unsigned int height = 1200; //1600*1200 pixmap
     const int maxIterations = 256;
-    int numThreads = 64;  //changeit
+    int numThreads = 16;  //changeit
 
     float x0 = -2;
     float x1 = 1;

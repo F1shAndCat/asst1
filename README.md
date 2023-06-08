@@ -40,7 +40,7 @@ Untar the downloaded file: `tar -xvf ispc-v1.18.0-linux.tar.gz`
 
 Add the ISPC `bin` directory to your system path.  For example, if untarring the downloaded file produces the directory `~/Downloads/ispc-v1.18.0-linux`, in bash you'd update your path variable with:
 
-    export PATH=$PATH:${HOME}/Downloads/ispc-v1.18.0-linux/bin
+    export PATH=$PATH:${HOME}/Documents/MyOwnCS/StanfordCS149/ispc-v1.18.0-linux/bin
 
 The above line can be added to your `.bashrc` file for permanence.
 
@@ -306,8 +306,7 @@ different CPU cores).
    are some obvious differences in semantics between the (create/join
    and (launch/sync) mechanisms, but the implications of these differences
    are more subtle. Here's a thought experiment to guide your answer: what
-   happens when you launch 10,000 ISPC tasks? What happens when you launch
-   10,000 threads? (For this thought experiment, please discuss in the general case
+   happens when you launch 10,000 ISPC tasks?**Running Well** What happens when you launch 10,000 threads?**Maximum Thread is 64 Threads** (For this thought experiment, please discuss in the general case
 
 - i.e. don't tie your discussion to this given mandelbrot program.)
 
